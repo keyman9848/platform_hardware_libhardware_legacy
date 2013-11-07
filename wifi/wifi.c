@@ -137,13 +137,16 @@ const char *get_dhcp_error_string() {
 
 static int check_driver_loaded() {
     char driver_status[PROPERTY_VALUE_MAX];
+#if 0
     FILE *proc;
     char line[sizeof(DRIVER_MODULE_TAG)+10];
+#endif //0
 
     if (!property_get(DRIVER_PROP_NAME, driver_status, NULL)
             || strcmp(driver_status, "ok") != 0) {
         return 0;  /* driver not loaded */
     }
+#if 0
     /*
      * If the property says the driver is loaded, check to
      * make sure that the property setting isn't just left
@@ -164,10 +167,14 @@ static int check_driver_loaded() {
     fclose(proc);
     property_set(DRIVER_PROP_NAME, "unloaded");
     return 0;
+#else
+    return 1;
+#endif
 }
 
 int wifi_load_driver()
 {
+#if 0
     char driver_status[PROPERTY_VALUE_MAX];
     int count = 100; /* wait at most 20 seconds for completion */
 
@@ -200,10 +207,15 @@ int wifi_load_driver()
     property_set(DRIVER_PROP_NAME, "timeout");
     wifi_unload_driver();
     return -1;
+#else
+    property_set(DRIVER_PROP_NAME, "ok");
+    return 0;
+#endif
 }
 
 int wifi_unload_driver()
 {
+#if 0
     int count = 20; /* wait at most 10 seconds for completion */
 
     if (rmmod(DRIVER_MODULE_NAME) == 0) {
@@ -218,6 +230,10 @@ int wifi_unload_driver()
 	return -1;
     } else
         return -1;
+#else
+    property_set(DRIVER_PROP_NAME, "unloaded");
+    return 0;
+#endif
 }
 
 int ensure_config_file_exists()
